@@ -1,4 +1,4 @@
-(ns circle.core
+(ns movable-triangle.core
   (:use [penumbra opengl]
         [clojure.contrib.def])
   (:require [penumbra [app :as app] [text :as text]]))
@@ -9,10 +9,10 @@
 
 (defn init [state]
   (app/vsync! true)
-  (app/title! "Circle")
+  (app/title! "Movable Triangle")
   (reset-state state))
 
-(defn draw-circle [p]
+(defn draw-triangle [p]
   (push-matrix
    (apply translate p)
    (draw-triangle-strip
@@ -28,7 +28,7 @@
   (color 0 0 0)
   (clear-color 1 1 1 1)
   (clear)
-  (draw-circle (:p state))
+  (draw-triangle (:p state))
   (app/repaint!))
 
 (defn move [state direction]
