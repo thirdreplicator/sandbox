@@ -1,0 +1,6 @@
+This project is simply a template for a minimal Penumbra OpenGL application. 
+When you run it, it just displays a white screen.
+
+% lein repl
+=> (use 'minimal.core)
+=> (start)
