@@ -1,0 +1,10 @@
+Sphere
+
+This project will display a 3D sphere using OpenGL via the Penumbra wrapper.
+
+USAGE:
+% lein deps
+% lein native-deps
+% lein repl
+=> (use 'sphere.core)
+=> (start)
