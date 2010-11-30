@@ -4,22 +4,15 @@
         [clojure.contrib.def])
   (:require [penumbra [app :as app] [text :as text]]))
 
-(defn sphere-vertices
-  [lod]
-  (for [theta (range 0 361 (/ 360 lod))]
-    (for [phi (range -90 91 (/ 180 (/ lod 2)))]
-      (cartesian (polar3 theta phi)))))
-
-
 (defn reshape [[x y width height] state]
   (frustum-view 50 (/ (double width) height) 0.1 100)
   (load-identity)
   (translate 0 -0.35 -5.75)
   (light 0
-    :position [-1 -1 -1 0])
+    :position [1 -1 -1 0])
   (fog
     :fog-mode :exp
-    :fog-density 0.15
+    :fog-density 0.05
     :fog-start 0
     :fog-end 10
     :fog-color [0 0 0 0])
@@ -30,28 +23,31 @@
     :rot-x (+ (:rot-x state) dy)
     :rot-y (+ (:rot-y state) dx)))
 
-(defn draw-square [w]
-    (draw-quads
-      (normal 0 0 -1)
-      (vertex w  0 1)
-      (vertex 0  w 1)
-      (vertex (- 0 w) 0 1)
-      (vertex 0 (- 0 w) 1)))
+(defn sphere-vertices
+  [lod]
+  (for [theta (range 0 361 (/ 360 lod))]
+    (for [phi (range -90 91 (/ 180 (/ lod 2)))]
+      (cartesian (polar3 theta phi)))))
 
-(defn draw-squares [n]
+(defn draw-sphere [vertices]
   (material :front-and-back
-    :ambient-and-diffuse [0 1 0 1])
-    (dotimes [_ n]
-      (rotate (/ 360 n) 0 1 0)
-      (draw-square 0.1)))
+    :ambient-and-diffuse [0.7 0.7 1 1]
+    :specular            [1 1 1 0.5]
+    :shininess           1000)
+  (doseq [arcs (partition 2 1 vertices)]
+    (draw-quad-strip
+     (doseq [[[a b] [c d]] (partition 2 1 (map list (first arcs) (second arcs)))]
+       (let [u (sub a d)
+             v (sub b d)]
+         (normal (normalize (cross u v))))
+       (vertex a)
+       (vertex b)))))
 
 (defn render-sphere [n]
-  (dotimes [_ n]
-    (rotate (/ 360 n) 1 0 0)
-    (draw-squares n)))
+  (draw-sphere (sphere-vertices n)))
 
 (defn init-sphere []
-  (def sphere (create-display-list (render-sphere 30))))
+  (def sphere (create-display-list (render-sphere 100))))
 
 (defn display [[delta time] state]
   (rotate (:rot-x state) 1 0 0)
@@ -70,7 +66,7 @@
   (enable :lighting)
   (enable :light0)
   (enable :fog)
-  (shade-model :flat)
+  (shade-model :smooth)
   state)
 
 (defn start []
