@@ -10,16 +10,6 @@
     (for [phi (range -90 91 (/ 180 (/ lod 2)))]
       (cartesian (polar3 theta phi)))))
 
-(defn init [state]
-  (app/title! "Sphere")
-  (enable :normalize)
-  (enable :depth-test)
-;  (enable :cull-face)
-  (enable :lighting)
-  (enable :light0)
-  (enable :fog)
-  (shade-model :flat)
-  state)
 
 (defn reshape [[x y width height] state]
   (frustum-view 50 (/ (double width) height) 0.1 100)
@@ -46,8 +36,7 @@
       (vertex w  0 1)
       (vertex 0  w 1)
       (vertex (- 0 w) 0 1)
-      (vertex 0 (- 0 w) 1)
-))
+      (vertex 0 (- 0 w) 1)))
 
 (defn draw-squares [n]
   (material :front-and-back
@@ -61,13 +50,28 @@
     (rotate (/ 360 n) 1 0 0)
     (draw-squares n)))
 
+(defn init-sphere []
+  (def sphere (create-display-list (render-sphere 30))))
+
 (defn display [[delta time] state]
   (rotate (:rot-x state) 1 0 0)
   (rotate (:rot-y state) 0 1 0)
   (clear-color 0 0 0 1)
   (clear)
-  (render-sphere 30)
+  (call-display-list  sphere)
   (app/repaint!))
+
+(defn init [state]
+  (init-sphere)
+  (app/title! "Sphere")
+  (enable :normalize)
+  (enable :depth-test)
+;  (enable :cull-face)
+  (enable :lighting)
+  (enable :light0)
+  (enable :fog)
+  (shade-model :flat)
+  state)
 
 (defn start []
   (app/start
