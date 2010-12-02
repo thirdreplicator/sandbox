@@ -1,0 +1,13 @@
+This is a minimal Penumbra project.  It simply draws a triangle.
+
+Usage:
+
+lein deps
+lein native-deps
+lein repl
+
+=> (use 'triangle.core)
+nil
+user=> (start)
+App
+
